@@ -34,10 +34,10 @@ food_img = [pygame.image.load(path.join(img_dir, "apple.png")).convert(),
             pygame.image.load(path.join(img_dir, "banana.png")).convert(),
             pygame.image.load(path.join(img_dir, "orange1.png")).convert()]
 
-head_image = [pygame.image.load(path.join(img_dir, "head_left.png")).convert(),
-              pygame.image.load(path.join(img_dir, "head_down.png")).convert(),
-              pygame.image.load(path.join(img_dir, "head_up.png")).convert(),
-              pygame.image.load(path.join(img_dir, "head_right.png")).convert()]
+head_image = [pygame.image.load(path.join(img_dir, "head_l.png")).convert(),
+              pygame.image.load(path.join(img_dir, "head_d.png")).convert(),
+              pygame.image.load(path.join(img_dir, "head_u.png")).convert(),
+              pygame.image.load(path.join(img_dir, "head_r.png")).convert()]
 
 snake_img = pygame.image.load(path.join(img_dir, "body3.png")).convert()
 snake = pygame.transform.scale(snake_img, (snake_block, snake_block))
@@ -67,8 +67,15 @@ def create_mes(msg, color, x, y, font_name, size):
     mes = font_style.render(msg, True, color)
     screen.blit(mes, [x, y])
 
+def draw_head(i, snake_list):
+    snake_head_img = head_image[i]
+    snake_head = pygame.transform.scale(snake_head_img, (snake_block, snake_block))
+    snake_head.set_colorkey(black)
+    screen.blit(snake_head, (snake_list[-1][0], snake_list[-1][1]))
+
 
 def game_loop():
+    turn = 0
     snake_list = []
     x1 = 400
     y1 = 300
@@ -82,6 +89,8 @@ def game_loop():
     food = pygame.transform.scale(random.choice(food_img), (snake_block, snake_block))
     food.set_colorkey(white)
     pygame.mixer.music.play()
+
+
 
     while run:
         clock.tick(FPS)
@@ -110,17 +119,19 @@ def game_loop():
                 if event.key == pygame.K_LEFT:
                     x1_change -= snake_block
                     y1_change = 0
+                    turn = 0
                 elif event.key == pygame.K_RIGHT:
                     x1_change += snake_block
                     y1_change = 0
-
-
+                    turn = 3
                 elif event.key == pygame.K_UP:
                     x1_change = 0
                     y1_change -= snake_block
+                    turn = 2
                 elif event.key == pygame.K_DOWN:
                     x1_change = 0
                     y1_change += snake_block
+                    turn = 1
 
         if x1 >= width or x1 <= 0 or y1 >= height or y1 <= 0:
             game_close = True
@@ -142,6 +153,8 @@ def game_loop():
         for x in snake_list:
             # pygame.draw.rect(screen,white,(x[0],x[1],snake_block,snake_block))
             screen.blit(snake, (x[0], x[1]))
+
+        draw_head(turn, snake_list)
 
         if eating_check(x1, y1, foodX, foodY):
             foodX = random.randrange(width - snake_block)
