@@ -86,6 +86,7 @@ def game_loop():
     foodY = random.randrange(height - snake_block)
     game_close = False
     run = True
+    paused = False
     food = pygame.transform.scale(random.choice(food_img), (snake_block, snake_block))
     food.set_colorkey(white)
     pygame.mixer.music.play()
@@ -94,6 +95,20 @@ def game_loop():
 
     while run:
         clock.tick(FPS)
+        while paused:
+            pygame.mixer.music.pause()
+            create_mes('Пауза! Нажмите ПРОБЕЛ для продолжения.', white, 50, 200, 'new_roman', 45)
+            pygame.display.update()
+            clock.tick(FPS)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    paused = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        paused = False
+                        pygame.mixer.music.unpause()
         while game_close:
             screen.fill(red)
             create_mes("вы проиграли !", black, 200, 200, "chalkduster.tttf", 70)
@@ -132,6 +147,8 @@ def game_loop():
                     x1_change = 0
                     y1_change += snake_block
                     turn = 1
+                if event.key == pygame.K_SPACE:
+                    paused = True
 
         if x1 >= width or x1 <= 0 or y1 >= height or y1 <= 0:
             game_close = True
